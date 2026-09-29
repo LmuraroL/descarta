@@ -1,5 +1,5 @@
 import { tokens } from "./texto";
-import { MARCA_AULA } from "./secoes";
+import { MARCA_AULA, pareceTitulo } from "./secoes";
 import type { PaginaTexto, Secao, TemaCapitulo } from "../types";
 
 const LIXO_NO_TITULO =
@@ -45,8 +45,16 @@ function temaInicial(paginas: PaginaTexto[]): TemaCapitulo {
     const achado = acharTemaNaPagina(p);
     if (achado && !LIXO_NO_TITULO.test(achado.titulo)) return achado;
   }
+  for (const p of paginas) {
+    for (const linha of p.texto.split("\n")) {
+      const t = linha.trim();
+      if (!pareceTitulo(t) || LIXO_NO_TITULO.test(t)) continue;
+      if (/^páginas?\s+\d/i.test(t)) continue;
+      return montarTema(t, p.pagina);
+    }
+  }
   const primeiro = paginas[0];
-  return montarTema("Tema do material", primeiro?.pagina ?? 1);
+  return montarTema(primeiro?.texto.split("\n").find((l) => l.trim().length > 12) ?? "Conteúdo", primeiro?.pagina ?? 1);
 }
 
 function acharTemaNaPagina(p: PaginaTexto): TemaCapitulo | undefined {
@@ -104,14 +112,30 @@ export function temaDaSecao(
     ? secao.titulo.slice(secao.titulo.indexOf("—") + 1)
     : secao.titulo;
   const extraTitulo = LIXO_NO_TITULO.test(nomeParte) ? [] : tokensDoTitulo(nomeParte);
-  const nucleo = [...new Set([...(base.nucleo ?? base.tokens), ...extraTitulo])];
-  const expandido = expandirComFrasesDoTema(nucleo, secao.texto);
+  const nucleo = [...new Set([...(base.nucleo ?? base.tokens), ...extraTitulo])].filter(
+    (t) => t !== "tema" && t !== "material" && t !== "conteudo",
+  );
+  const porFrase = expandirComFrasesDoTema(nucleo, secao.texto);
+  const porFreq = nucleo.length < 3 ? expandirPorFrequencia(secao.texto) : [];
   return {
-    titulo: base.titulo,
+    titulo: nucleo.length ? base.titulo : secao.titulo,
     pagina: base.pagina,
-    nucleo,
-    tokens: [...new Set([...nucleo, ...expandido])].slice(0, 40),
+    nucleo: nucleo.length ? nucleo : porFreq.slice(0, 8),
+    tokens: [...new Set([...nucleo, ...porFrase, ...porFreq])].slice(0, 48),
   };
+}
+
+function expandirPorFrequencia(texto: string): string[] {
+  const conta = new Map<string, number>();
+  for (const w of tokens(texto)) {
+    if (w.length < 5 || IGNORAR_TEMA.has(w) || /^\d+$/.test(w)) continue;
+    conta.set(w, (conta.get(w) ?? 0) + 1);
+  }
+  return [...conta.entries()]
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .map(([w]) => w)
+    .slice(0, 20);
 }
 
 function expandirComFrasesDoTema(nucleo: string[], texto: string): string[] {

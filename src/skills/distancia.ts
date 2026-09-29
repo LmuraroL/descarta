@@ -18,13 +18,14 @@ export function distanciaDoTema(texto: string, tema: TemaCapitulo): DistanciaTem
   }
 
   if (!nucleo.size) {
-    return devePreservar(texto) ? 1 : 2;
+    return 1;
   }
 
   if (interNucleo >= 2) return 0;
   if (interNucleo >= 1 && (devePreservar(texto) || inter >= 2)) return 0;
   if (inter >= 2) return 1;
-  if (interNucleo >= 1 && devePreservar(texto)) return 1;
+  if (interNucleo >= 1) return 1;
+  if (inter >= 1) return 1;
   return 2;
 }
 
@@ -33,8 +34,5 @@ export function dentroDoTema(distancia: DistanciaTema): boolean {
 }
 
 export function valeNoTema(texto: string, tema: TemaCapitulo): boolean {
-  const d = distanciaDoTema(texto, tema);
-  if (d === 2) return false;
-  if (d === 1 && !devePreservar(texto)) return false;
-  return true;
+  return distanciaDoTema(texto, tema) <= DISTANCIA_MAXIMA;
 }

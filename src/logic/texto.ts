@@ -129,11 +129,11 @@ export function devePreservar(texto: string): boolean {
 }
 
 const VERBO_TESE =
-  /\b(é|são|está|estão|foi|foram|será|serão|consiste|significa|define|definido|chamamos|chama-se|torna|tornou|deixou|deixa|muda|transforma|transformou|cria|gera|exige|permite|impede|ocorre|depende|resulta|leva|causa|produz|representa|inclui|trata|refere|disputa|compete|relaciona|diferencia|converte|registra|organiza)\b/i;
+  /\b(é|são|está|estão|foi|foram|será|serão|consiste|significa|define|definido|chamamos|chama-se|torna|tornou|deixou|deixa|muda|transforma|transformou|cria|gera|exige|permite|impede|ocorre|depende|resulta|leva|causa|produz|representa|inclui|trata|refere|disputa|compete|relaciona|diferencia|converte|registra|organiza|precisa|podem|devem|utiliza|garante|estabelece|considera|mede|avalia|implica|envolve|assegura|determina)\b/i;
 
 export function temTese(texto: string): boolean {
   const t = texto.replace(/\s+/g, " ").trim();
-  if (t.length < 55) return false;
+  if (t.length < 42) return false;
   return VERBO_TESE.test(t) || temDefinicao(t) || temMecanismo(t) || temExcecao(t);
 }
 
@@ -173,7 +173,7 @@ export function frasesComPagina(
   const partes = texto
     .split(/(?<=[.!?])\s+/)
     .map((f) => f.replace(/\s+/g, " ").trim())
-    .filter((f) => f.length > 55 && !pareceFragmento(f));
+    .filter((f) => f.length > 42 && !pareceFragmento(f));
   return partes.map((frase) => ({ frase, pagina }));
 }
 
