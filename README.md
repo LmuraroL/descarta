@@ -60,12 +60,13 @@ ollama pull llama3.2
 
 ## GitHub Pages
 
-O build é um site estático (`dist/`). Depois de publicar o repo:
+O site público é o **build** (pasta `dist`), não o código-fonte. Depois do push em `main`, o Actions publica a branch `gh-pages`.
 
-1. Settings → Pages → Source: **GitHub Actions**
-2. O workflow `.github/workflows/pages.yml` publica a cada push em `main`
+1. Settings → Pages
+2. Branch: **gh-pages** / pasta **/** (root)
+3. Abra https://lmurarol.github.io/descarta/
 
-Quem testar abre a URL, envia o PDF (o arquivo não sobe para o GitHub) e, se quiser, cola a chave da Groq. Ollama não entra nessa versão.
+Se a tela ficar branca, o Pages ainda está apontando para `main` (arquivo `index.html` cru, que pede `/src/main.tsx`).
 
 ---
 
