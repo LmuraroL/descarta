@@ -74,7 +74,8 @@ async function julgarLote(
 ): Promise<JulgamentoCard[] | null> {
   const prompt = [
     "Você julga flashcards de estudo em português.",
-    "ok=true só se TODAS forem verdade: a pergunta é uma pergunta clara; a resposta responde essa pergunta; o texto não está embaralhado nem colado (duas frases misturadas, título no meio); o conceito é um termo estudável, não um aviso ou título de seção.",
+    "ok=true só se TODAS forem verdade: a pergunta é clara e fala do tema (aula, case, palavra-chave ou exercício); a resposta é a tese perto desse tema; o texto não está embaralhado nem colado; o conceito é o tema ou o termo definido.",
+    "ok=false se a pergunta recorta a resposta, se o texto é lixo de apostila (bibliografia, relógio, veja as) ou se não dá para estudar.",
     'Devolva só JSON: {"julgamentos":[{"i":0,"ok":true,"motivo":""}]}',
     "",
     ...lote.map(

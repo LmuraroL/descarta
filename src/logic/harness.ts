@@ -6,12 +6,13 @@ import { julgarSecaoComModelo, statusModelo } from "./modelo";
 import { deduplicar } from "../skills/deduplicacao";
 import { dentroDoTema, distanciaDoTema, valeNoTema } from "../skills/distancia";
 import { extrairTrechos } from "../skills/extracao";
-import { cardDeSaida, evitarCardsInuteis, flashcardsDeAfirmacoes } from "../skills/flashcard";
+import { cardDeSaida, evitarCardsInuteis, flashcardsDaSecao } from "../skills/flashcard";
 import { montarIndice } from "../skills/indice";
 import { ehLixo, identificarLixo } from "../skills/lixo";
 import type {
   Card,
   Descartes,
+  DistanciaTema,
   PaginaTexto,
   Perfil,
   ProgressoSecao,
@@ -30,7 +31,14 @@ export async function processarSecao(
   tema: TemaCapitulo,
 ): Promise<{ cards: Card[]; descartes: Descartes[]; incerto: boolean; usouModelo: boolean }> {
   const descartes: Descartes[] = [];
-  const lixoSecao = identificarLixo(`${secao.titulo} ${secao.texto.slice(0, 240)}`);
+  const blocoDidatico =
+    secao.tipo === "aula" ||
+    secao.tipo === "case" ||
+    secao.tipo === "palavra_chave" ||
+    secao.tipo === "exercicio";
+  const lixoSecao = blocoDidatico
+    ? undefined
+    : identificarLixo(`${secao.titulo} ${secao.texto.slice(0, 240)}`);
   if (lixoSecao) {
     descartes.push({
       classe: lixoSecao.classe,
@@ -49,7 +57,7 @@ export async function processarSecao(
       continue;
     }
     const distancia = distanciaDoTema(t.texto, tema);
-    if (!valeNoTema(t.texto, tema)) {
+    if (!blocoDidatico && !valeNoTema(t.texto, tema)) {
       descartes.push({
         classe: "longe_do_tema",
         pagina: t.pagina,
@@ -81,17 +89,21 @@ export async function processarSecao(
   }
 
   if (!cards.length) {
-    cards = flashcardsDeAfirmacoes(afirmacoes, secao.id);
+    cards = flashcardsDaSecao(afirmacoes, secao);
   }
 
   cards = rejeitarSemOrigem(cards)
     .filter((c) => !ehLixo(`${c.conceito} ${c.pergunta} ${c.resposta} ${c.trecho}`))
     .filter((c) => cardFazSentido(c))
-    .map((c) => {
+    .map((c, i) => {
+      if (blocoDidatico) {
+        const distancia: DistanciaTema = i === 0 ? 0 : 1;
+        return { ...c, distancia };
+      }
       const distancia = distanciaDoTema(`${c.conceito} ${c.resposta}`, tema);
       return { ...c, distancia };
     })
-    .filter((c) => valeNoTema(`${c.conceito} ${c.resposta}`, tema) && dentroDoTema(c.distancia))
+    .filter((c) => blocoDidatico || (valeNoTema(`${c.conceito} ${c.resposta}`, tema) && dentroDoTema(c.distancia)))
     .map((c) => {
       if (!c.pagina || !c.trecho.trim()) return { ...c, incerto: true };
       return c;

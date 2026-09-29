@@ -50,7 +50,7 @@ export function trechoCabeNoTexto(trecho: string, texto: string): boolean {
 export function limparRelogioApostila(texto: string): string {
   return texto
     .replace(/\d{1,2}:\d{2}\s*/g, " ")
-    .replace(/[“”][^“”]{0,120}[“”]/g, " ")
+    .replace(/[“”]([^“”]{70,})[“”]/g, " ")
     .replace(/\s{2,}/g, " ")
     .replace(/\s+([.,;:])/g, "$1")
     .trim();
@@ -151,15 +151,25 @@ export function pareceFragmento(texto: string): boolean {
 
 export function perguntaCopiaResposta(pergunta: string, resposta: string): boolean {
   const q = normalizar(pergunta)
+    .replace(/^no tema\s+/, "")
+    .replace(/\s+o que o texto afirma sobre /, " ")
+    .replace(/\s+o que o texto afirma$/, "")
+    .replace(/\s+o que o texto define$/, "")
+    .replace(/\s+o que a metafora explica$/, "")
+    .replace(/\s+o que diferencia as duas ideias$/, "")
+    .replace(/\s+qual o mecanismo descrito$/, "")
+    .replace(/\s+o que o exercicio de fixacao afirma$/, "")
     .replace(/^o que o texto afirma sobre /, "")
     .replace(/^o que e /, "")
     .replace(/^qual o mecanismo de /, "")
     .replace(/^qual a excecao citada sobre /, "")
     .replace(/^qual dado numerico o texto cita sobre /, "")
+    .replace(/^qual dado o texto cita$/, "")
     .replace(/\?$/, "")
     .trim();
   const r = normalizar(resposta);
-  if (!q || q.length < 12) return true;
+  if (!q) return true;
+  if (q.length < 12) return r.length < q.length + 28;
   const extra = r.length - q.length;
   if (r.startsWith(q) && extra < 48) return true;
   if (q.startsWith(r) && r.length < 80) return true;

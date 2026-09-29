@@ -24,7 +24,7 @@ const BIOGRAFIA =
   /\b(conhe[cç]a seus professores|possui gradua[cç][aã]o|mestrado em|doutorado em|professor (assistente|convidado|pucrs)|ceo e cofundador|minicurr[ií]culo|curr[ií]culo lattes)\b/i;
 
 const MAPA_APOSTILA =
-  /\b(o que comp[oõ]e o mapa da aula|mapa da aula s[aã]o os cap[ií]tulos|exerc[ií]cios de fixa[cç][aã]o|destaques conte[uú]dos essenciais)\b/i;
+  /\b(o que comp[oõ]e o mapa da aula|mapa da aula s[aã]o os cap[ií]tulos|destaques conte[uú]dos essenciais|os tempos marcam os principais momentos)\b/i;
 
 export function identificarLixo(texto: string): AchadoLixo | undefined {
   const t = texto.replace(/\s+/g, " ").trim();
@@ -52,7 +52,7 @@ export function identificarLixo(texto: string): AchadoLixo | undefined {
     return {
       lixo: true,
       classe: "mapa_apostila",
-      motivo: "Legenda da apostila (mapa, destaques, exercícios), não conteúdo da aula.",
+      motivo: "Legenda da apostila (mapa, destaques, relógio da videoaula), não conteúdo da aula.",
     };
   }
   if (BIBLIOGRAFIA.test(t)) {
@@ -76,7 +76,7 @@ export function identificarLixo(texto: string): AchadoLixo | undefined {
       motivo: "Sumário ou índice — só organiza o arquivo.",
     };
   }
-  if (INSTRUCAO.test(t)) {
+  if (INSTRUCAO.test(t) && !/\b(verdadeiro|falso)\b/i.test(t) && !/exerc[ií]cio de fixa/i.test(t)) {
     return {
       lixo: true,
       classe: "instrucao_leitor",

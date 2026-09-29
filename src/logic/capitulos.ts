@@ -1,5 +1,5 @@
 import { tokens } from "./texto";
-import { MARCA_AULA, pareceTitulo } from "./secoes";
+import { MARCA_AULA, MARCA_CASE, pareceAncora, pareceTitulo } from "./secoes";
 import type { PaginaTexto, Secao, TemaCapitulo } from "../types";
 
 const LIXO_NO_TITULO =
@@ -10,6 +10,8 @@ const IGNORAR_TEMA = new Set([
   "disciplina", "apostila", "pdf", "pagina", "paginas", "mba", "curso",
   "bibliografia", "referencias", "sumario", "indice", "ementa",
   "neste", "nesta", "professor", "eduardo", "prange", "texto", "conteudo",
+  "case", "caso", "palavra", "chave", "exercicio", "fixacao",
+  "verdadeiro", "falso", "tempos", "videoaula", "videoaulas", "marcam",
 ]);
 
 export function numeroAula(titulo: string): number | undefined {
@@ -33,9 +35,10 @@ export function temasPorPagina(paginas: PaginaTexto[]): Map<number, TemaCapitulo
 export function temasPorAula(secoes: Secao[]): Map<number, TemaCapitulo> {
   const mapa = new Map<number, TemaCapitulo>();
   for (const s of secoes) {
+    if (s.tipo && s.tipo !== "aula") continue;
     const n = numeroAula(s.titulo);
     if (n === undefined || mapa.has(n)) continue;
-    mapa.set(n, montarTema(tituloDaAula(s.titulo), s.paginaInicio));
+    mapa.set(n, montarTema(s.ancora || tituloDaAula(s.titulo), s.paginaInicio));
   }
   return mapa;
 }
@@ -59,20 +62,22 @@ function temaInicial(paginas: PaginaTexto[]): TemaCapitulo {
 
 function acharTemaNaPagina(p: PaginaTexto): TemaCapitulo | undefined {
   const linhas = p.texto.split("\n").map((l) => l.trim()).filter(Boolean);
+  let achado: TemaCapitulo | undefined;
   for (let i = 0; i < linhas.length; i++) {
     const linha = linhas[i];
-    if (!MARCA_AULA.test(linha)) continue;
+    if (!MARCA_AULA.test(linha) && !MARCA_CASE.test(linha)) continue;
     const extra: string[] = [];
-    for (let k = i + 1; k < i + 5 && k < linhas.length; k++) {
+    for (let k = i + 1; k < i + 6 && k < linhas.length; k++) {
       const t = linhas[k];
-      if (MARCA_AULA.test(t) || t.length > 68) break;
-      if (/^(neste|nesta|o professor|a entrada|muitas|eduardo|leo)\b/i.test(t)) break;
-      extra.push(t);
+      if (MARCA_AULA.test(t) || MARCA_CASE.test(t) || t.length > 92) break;
+      if (/^(neste|nesta|o professor|a entrada|muitas|eduardo|leo|os tempos)\b/i.test(t)) break;
+      if (pareceAncora(t)) extra.push(t);
+      else if (extra.length) break;
     }
     const titulo = extra.length ? extra.join(" ") : linha;
-    return montarTema(tituloDaAula(`${linha} — ${titulo}`), p.pagina);
+    achado = montarTema(tituloDaAula(`${linha} — ${titulo}`), p.pagina);
   }
-  return undefined;
+  return achado;
 }
 
 export function montarTema(titulo: string, pagina: number): TemaCapitulo {
@@ -104,13 +109,23 @@ export function temaDaSecao(
   temasAula: Map<number, TemaCapitulo>,
   temasPagina: Map<number, TemaCapitulo>,
 ): TemaCapitulo {
+  const ancoraNome = (secao.ancora || "").trim();
+  if (secao.tipo === "case" || secao.tipo === "palavra_chave" || secao.tipo === "exercicio") {
+    const base = montarTema(ancoraNome || secao.titulo, secao.paginaInicio);
+    const extra = expandirComFrasesDoTema(base.nucleo, secao.texto);
+    return {
+      ...base,
+      tokens: [...new Set([...base.nucleo, ...extra])].slice(0, 48),
+    };
+  }
+
   const n = numeroAula(secao.titulo);
   const aula = n !== undefined ? temasAula.get(n) : undefined;
   const daPagina = temasPagina.get(secao.paginaInicio);
-  const base = aula ?? daPagina ?? montarTema(secao.titulo, secao.paginaInicio);
-  const nomeParte = secao.titulo.includes("—")
+  const base = aula ?? daPagina ?? montarTema(ancoraNome || secao.titulo, secao.paginaInicio);
+  const nomeParte = ancoraNome || (secao.titulo.includes("—")
     ? secao.titulo.slice(secao.titulo.indexOf("—") + 1)
-    : secao.titulo;
+    : secao.titulo);
   const extraTitulo = LIXO_NO_TITULO.test(nomeParte) ? [] : tokensDoTitulo(nomeParte);
   const nucleo = [...new Set([...(base.nucleo ?? base.tokens), ...extraTitulo])].filter(
     (t) => t !== "tema" && t !== "material" && t !== "conteudo",
@@ -118,7 +133,7 @@ export function temaDaSecao(
   const porFrase = expandirComFrasesDoTema(nucleo, secao.texto);
   const porFreq = nucleo.length < 3 ? expandirPorFrequencia(secao.texto) : [];
   return {
-    titulo: nucleo.length ? base.titulo : secao.titulo,
+    titulo: nucleo.length ? (ancoraNome || base.titulo) : secao.titulo,
     pagina: base.pagina,
     nucleo: nucleo.length ? nucleo : porFreq.slice(0, 8),
     tokens: [...new Set([...nucleo, ...porFrase, ...porFreq])].slice(0, 48),

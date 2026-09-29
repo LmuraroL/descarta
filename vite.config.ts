@@ -56,11 +56,12 @@ async function apiMiddleware(
       }
       const body = JSON.parse(await lerCorpo(req as NodeReadable));
       const user = [
-        `Tema da aula: ${body.tema?.titulo ?? ""}`,
+        `Âncora do bloco: ${body.secao.ancora ?? body.secao.titulo}`,
+        `Tema: ${body.tema?.titulo ?? ""}`,
         `Núcleo do tema: ${(body.tema?.nucleo ?? body.tema?.tokens ?? []).join(", ")}`,
-        "Aula é o tema. Distância 0 = no tema, 1 = perto e ensina, 2 = longe. Sem card com distância 2.",
-        "Sem card de fragmento (frase cortada, lista solta, pergunta que só copia a resposta).",
-        "Sem card de bibliografia, sumário, ementa, veja/consulte ou rótulo de disciplina.",
+        "A pergunta nasce da âncora (título da aula, case, palavra-chave ou exercício). A resposta é o texto logo abaixo do título.",
+        "CASE é outro tema, não misturar com a parte da aula. Palavra-chave vira definição. Exercício de fixação vira o enunciado.",
+        "Sem card de fragmento, bibliografia, sumário, ementa, veja/consulte ou relógio da videoaula.",
         "",
         `Seção "${body.secao.titulo}" (páginas ${body.secao.paginaInicio}–${body.secao.paginaFim}):`,
         body.secao.texto,
@@ -121,10 +122,10 @@ function promptSistema(perfil: string): string {
     "Perfil de corte (obrigatório em todo julgamento):",
     perfil,
     "",
-    "Referência: o tema da AULA. Distância 0 no tema, 1 perto só se ensina, 2 longe — sem card com 2.",
+    "Referência: âncora do bloco (AULA/PARTE, CASE, PALAVRA-CHAVE, EXERCÍCIO). Pergunta sobre o tema; resposta = trecho próximo ao título.",
     "Fragmento sem tese não vira card. Pergunta não pode ser recorte da resposta.",
-    "Lixo de apostila não vira card: bibliografia, referências, sumário, ementa, veja/consulte, disciplina N.",
-    "Regras: repetiu, colapsa; definição, mecanismo, causa, exceção e dado de conteúdo ficam se estiverem no tema;",
+    "Lixo de apostila não vira card: bibliografia, referências, sumário, ementa, veja/consulte, relógio da videoaula.",
+    "Regras: repetiu, colapsa; definição, metáfora, mecanismo, causa, exceção e dado de conteúdo ficam se estiverem no bloco do tema;",
     "não invente; todo card precisa de página e trecho da seção.",
     'Saída: {"cards":[{"conceito":"","pergunta":"","resposta":"","pagina":1,"trecho":"","classe":"unico"}]}',
   ].join("\n");

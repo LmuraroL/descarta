@@ -25,7 +25,7 @@ O arquivo do livro **não sobe para o GitHub**. Fica no navegador. O app guarda 
 
 ## O que o app descarta
 
-Quando o material tem **AULA N • PARTE N**, o tema é a aula. Distância 2 (longe do tema) não vira card.
+A apostila é lida por **âncoras**: `AULA N • PARTE N`, títulos de tema (ex.: *Da Abundância de Dados à Síntese Inteligente*), `CASE`, `PALAVRA-CHAVE` e `EXERCÍCIO DE FIXAÇÃO`. A pergunta nasce do tema; a resposta é o texto **logo abaixo** desse título.
 
 Também não vira card:
 
@@ -35,7 +35,7 @@ Também não vira card:
 - pergunta que só recorta a resposta
 - repetição da mesma afirmação (fica a formulação mais clara)
 
-O que ensina e está no tema permanece: definição, mecanismo, causa, exceção, dado de conteúdo — sempre com página.
+O que ensina e está no tema permanece: metáfora, definição (palavra-chave vira “O que é X?”), mecanismo, enunciado de exercício, causa, exceção — sempre com página.
 
 ---
 

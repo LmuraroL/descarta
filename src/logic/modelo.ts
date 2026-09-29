@@ -30,6 +30,8 @@ export async function julgarSecaoComModelo(
       body: JSON.stringify({
         secao: {
           titulo: secao.titulo,
+          ancora: secao.ancora,
+          tipo: secao.tipo,
           paginaInicio: secao.paginaInicio,
           paginaFim: secao.paginaFim,
           texto: secao.texto.slice(0, 8000),

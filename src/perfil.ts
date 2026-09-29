@@ -1,15 +1,14 @@
 import type { Perfil } from "./types";
 
-export const CLASSES_CORTE_PADRAO = `A unidade de tema é a AULA (Aula 1, Aula 2…). Cada parte herda o tema da aula.
+export const CLASSES_CORTE_PADRAO = `A apostila tem âncoras: AULA N • PARTE N (tema da parte), CASE (outro tema), PALAVRA-CHAVE (definição) e EXERCÍCIO DE FIXAÇÃO.
 
-Distância até o tema da aula: 0 no assunto, 1 perto só se ensina (definição, mecanismo, causa, exceção), 2 longe. Distância 2 não vira card.
+A pergunta do card nasce da âncora. A resposta é o trecho didático logo abaixo do título — proximidade física ao tema, não um recorte solto da frase.
 
-Fragmento sem tese não vira card (frase que começa minúscula, lista solta, pergunta que só recorta a resposta).
+Palavra-chave vira “O que é X?”. Exercício de fixação vira card do enunciado no tema da aula/case. Relógio da videoaula e “os tempos marcam…” não viram card.
 
-Páginas antes da primeira aula (capa, professores, ementa, bibliografia, mapa da apostila) não geram card.
-Biografia do autor não gera card. Resumo final e avaliação não geram card.
+Fragmento sem tese não vira card. Páginas antes da primeira aula, biografia, resumo e avaliação não geram card.
 
-Lixo de apostila: bibliografia, ementa, sumário, “veja as referências”, disciplina 5, currículo do professor, relógio da videoaula.
+Lixo: bibliografia, ementa, sumário, “veja as referências”, currículo do professor.
 
 Não invente. Card sem página é inválido.`;
 

@@ -35,6 +35,8 @@ export type TemaCapitulo = {
 
 export type RuntimeModelo = "ollama" | "skills_locais" | "groq" | "gemini";
 
+export type TipoSecao = "aula" | "case" | "palavra_chave" | "exercicio";
+
 export type PaginaTexto = {
   pagina: number;
   texto: string;
@@ -43,6 +45,8 @@ export type PaginaTexto = {
 export type Secao = {
   id: string;
   titulo: string;
+  ancora: string;
+  tipo: TipoSecao;
   paginaInicio: number;
   paginaFim: number;
   texto: string;

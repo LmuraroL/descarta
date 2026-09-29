@@ -12,8 +12,8 @@ import { identificarLixo } from "./skills/lixo";
 import { temLogica } from "./skills/logica";
 import type { Card, ClasseGuardrail, SaidaEstruturada, Secao } from "./types";
 
-const MAX_TRECHO = 320;
-const MAX_RESPOSTA = 320;
+const MAX_TRECHO = 480;
+const MAX_RESPOSTA = 520;
 
 export function temDadoDeConteudo(texto: string): boolean {
   if (/\d+\s*%/.test(texto)) return true;
