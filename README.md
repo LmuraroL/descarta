@@ -1,56 +1,75 @@
 # Descarta
 
-**Trabalho acadêmico de MBA** (Data Science e IA para causar disrupção de mercado). Os direitos de uso são **exclusivamente educacionais, acadêmicos e de pesquisa**. Uso comercial não é autorizado.
+Trabalho acadêmico de MBA (Data Science e IA para causar disrupção de mercado). Uso **educacional, acadêmico e de pesquisa**. Uso comercial não é autorizado. Ver [LICENSE](LICENSE).
 
-Leitor **pessoal** de PDFs dos livros e materiais do curso. O sistema lê uma seção de cada vez, colapsa repetição, preserva o que aparece uma única vez e entrega um **índice clicável** de flashcards — sempre com a **página de origem**.
+O Descarta lê **um PDF de estudo por vez** e entrega flashcards só do que importa: o repetido sai, o lixo de apostila sai, e cada card cita a **página**.
 
-A disrupção não é “mais um chat em cima de PDF”. Ferramentas comuns devolvem resumo genérico e aumentam texto. O Descarta vende **descarte com critério explícito**: repetição colapsada, conceito único preservado, card sem página rejeitado.
+Não é chat em cima de PDF. O valor está no que **não** vira card.
 
-Isto **não** redistribui o livro. O arquivo continua com o dono. O app guarda só conceito, pergunta, resposta, página e um trecho curto de apoio.
+O arquivo do livro **não sobe para o GitHub**. Fica no navegador. O app guarda no `localStorage` só conceito, pergunta, resposta, página e um trecho curto.
 
----
-
-## A ideia
-
-O excesso de informação intoxica o estudo: o mesmo argumento volta três vezes, o preâmbulo histórico não ensina o mecanismo, o exemplo não acrescenta caso. O valor está no que **sai**.
-
-Quatro peças:
-
-1. **Perfil** — classes nomeadas de corte, mais o que você marcou como card inútil ou conceito ausente.
-2. **Skills** — extração (trecho + página), deduplicação, flashcard, índice.
-3. **Guardrails** — sem página não aparece; não inventa número nem definição; único não some por parecer óbvio; corte só nas classes do perfil.
-4. **Harness** — processa por seção, exige saída estruturada, rejeita o que não tem origem.
+**Versão pública:** [lmurarol.github.io/descarta](https://lmurarol.github.io/descarta/)
 
 ---
 
 ## Como usar
 
+1. Abra o site (ou rode localmente).
+2. Opcional: cole uma chave de IA gratuita (Groq `gsk_…` ou Gemini `AIza…`) no campo da tela inicial. Sem chave o app funciona igual, só com as regras locais.
+3. Envie um PDF **com texto selecionável** (não foto / scan).
+4. Espere **desinfoxicando o conteúdo**.
+5. Estude no card: toque para virar (pergunta creme → resposta verde), **Anterior** / **Próximo**, página no canto.
+6. **Este card não é relevante** tira aquele card. **Enviar outro PDF** recomeça.
+
+---
+
+## O que o app descarta
+
+Quando o material tem **AULA N • PARTE N**, o tema é a aula. Distância 2 (longe do tema) não vira card.
+
+Também não vira card:
+
+- capa, ementa, bibliografia, sumário, currículo do professor
+- relógio de videoaula (`04:21`) e citação da margem colada no texto
+- fragmento sem tese (frase cortada, lista solta)
+- pergunta que só recorta a resposta
+- repetição da mesma afirmação (fica a formulação mais clara)
+
+O que ensina e está no tema permanece: definição, mecanismo, causa, exceção, dado de conteúdo — sempre com página.
+
+---
+
+## IA (opcional)
+
+| Onde | O que faz |
+| --- | --- |
+| Site no GitHub Pages | Skills no navegador. Se você colar a chave, Groq ou Gemini **julga se a pergunta faz sentido** e corta card sem lógica. |
+| `npm run dev` | Tenta também o [Ollama](https://ollama.com) nesta máquina. Se não estiver rodando, cai nas skills locais. |
+
+A chave fica só neste navegador. Não vá no repositório.
+
+- Groq: [console.groq.com/keys](https://console.groq.com/keys)
+- Gemini: [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+
+GitHub Pages **não hospeda LLM**. Não coloque pesos de modelo no git.
+
+---
+
+## Rodar localmente
+
 ```bash
-cd descarta
 npm install
 npm run dev
 ```
 
-O navegador abre em geral em `http://localhost:5173`.
+Em geral: `http://localhost:5173` (ou a porta seguinte, se a 5173 estiver ocupada).
 
-1. **Abrir PDF do MBA** (texto selecionável, não foto).
-2. Esperar o processamento **por seção**.
-3. Clicar numa entrada do índice.
-4. Ler os flashcards: pergunta, resposta curta, página.
-5. Marcar **card inútil** ou **conceito que faltou** — isso atualiza o perfil e entra na avaliação.
+```bash
+npm run build
+npm run preview
+```
 
-Há um **capítulo de prova** (texto original, não é livro de terceiros) para medir o descarte: cards sem página (deve ser zero), repetição residual, conceitos únicos que não podem sumir.
-
-### Modelo local e IA gratuita
-
-O Descarta tenta o [Ollama](https://ollama.com) nesta máquina só quando você roda `npm run dev`. **GitHub Pages não sobe LLM** — é só arquivo estático.
-
-Para a página pública julgar se a pergunta faz sentido, cada pessoa cola a própria chave gratuita:
-
-1. Groq (recomendado): [console.groq.com/keys](https://console.groq.com/keys) — a chave começa com `gsk_`
-2. Gemini: [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — a chave começa com `AIza`
-
-A chave fica no `localStorage` do navegador. Não vá no repositório. Sem chave o app ainda lê o PDF e monta cards com as skills locais.
+Ollama, se quiser no desenvolvimento:
 
 ```bash
 ollama pull llama3.2
@@ -60,46 +79,20 @@ ollama pull llama3.2
 
 ## GitHub Pages
 
-O site público é o **build** (pasta `dist`), não o código-fonte. Depois do push em `main`, o Actions publica a branch `gh-pages`.
+O que o visitante vê é o **build** (`dist/`), publicado na branch `gh-pages` a cada push em `main`.
 
 1. Settings → Pages
 2. Branch: **gh-pages** / pasta **/** (root)
-3. Abra https://lmurarol.github.io/descarta/
+3. Site: https://lmurarol.github.io/descarta/
 
-Se a tela ficar branca, o Pages ainda está apontando para `main` (arquivo `index.html` cru, que pede `/src/main.tsx`).
-
----
-
-## O que isto é (e o que não é)
-
-- É um protótipo acadêmico de extração + corte + cards citados.
-- É um PDF **por vez**, na máquina de quem estuda.
-- **Não** é resumo longo do capítulo.
-- **Não** é leitor de blogs, RSS, nuvem, conta ou app mobile.
-- **Não** faz OCR de PDF escaneado.
+Se a tela ficar branca, o Pages ainda está em `main` (o `index.html` cru pede `/src/main.tsx` e quebra).
 
 ---
 
-## Perfil de corte
+## O que isto não é
 
-Só cai fora o que estiver numa classe nomeada:
-
-- preâmbulo histórico que não ensina o mecanismo
-- exemplo que repete a mesma afirmação sem acrescentar caso, número ou exceção
-- reformulação da mesma frase
-
-Regra fixa: repetiu, colapsa e fica a formulação mais clara. Apareceu uma vez, permanece. Definição, número, causa, mecanismo e exceção ficam, mesmo que o texto seja curto.
-
----
-
-## Prova (a parte de data science)
-
-No capítulo rotulado o app mede:
-
-- card marcado como inútil
-- conceito marcado como ausente
-- card sem página (alvo: zero)
-- repetição que ainda gerou dois cards da mesma afirmação
-- se um conceito que aparece **uma única vez** (no conjunto de teste: vazamento de dados) foi apagado
-
-O sucesso não é “gerou texto”. É acertar o descarte.
+- Resumo longo do capítulo
+- Chat genérico com o livro
+- OCR de PDF escaneado
+- Leitor de blogs, RSS, nuvem ou app mobile
+- Redistribuição do material protegido
