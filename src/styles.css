@@ -333,24 +333,65 @@ button {
   word-break: break-word;
 }
 
-.flash em {
-  margin-top: auto;
-  font-style: normal;
+.flash small {
   font-size: 0.9rem;
-}
-
-.face.frente em {
-  color: var(--suave);
-}
-
-.face.verso em,
-.face.verso small {
   color: var(--suave-resposta);
 }
 
-.flash small {
+.dica-virar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: auto;
-  font-size: 0.9rem;
+  align-self: flex-start;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.01em;
+  animation: dica-pulso 1.8s ease-in-out infinite;
+}
+
+.face.frente .dica-virar {
+  color: #7a3214;
+  background: #f3d9c4;
+}
+
+.face.verso .dica-virar {
+  color: #1c3d38;
+  background: var(--accento-resposta);
+  animation: none;
+}
+
+.flash.virado .dica-virar {
+  animation: none;
+}
+
+@keyframes dica-pulso {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.btn.virar-cta {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 14px 0 0;
+  background: var(--accento);
+  color: #fff8ee;
+}
+
+.cards-fase.revelado .btn.virar-cta {
+  background: #16312d;
+  color: var(--tinta-resposta);
+  border: 1px solid var(--accento-resposta);
 }
 
 .topo {
@@ -398,7 +439,6 @@ button {
 }
 
 .btn {
-  flex: 1;
   background: var(--tinta);
   color: #f7f1e8;
   border: 0;
@@ -406,6 +446,10 @@ button {
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.controles .btn {
+  flex: 1;
 }
 
 .btn.secundario {
@@ -434,7 +478,8 @@ button {
   .flash-cena,
   .progresso span,
   .cards-fase,
-  .app:has(.cards-fase.revelado) {
+  .app:has(.cards-fase.revelado),
+  .dica-virar {
     transition: none;
     animation: none;
   }

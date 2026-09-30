@@ -252,6 +252,20 @@ function TelaUpload({
   );
 }
 
+function DicaVirar({ texto }: { texto: string }) {
+  return (
+    <span className="dica-virar">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M12 6V3L8 7l4 4V8c2.76 0 5 2.24 5 5a5 5 0 0 1-8.9 3.1L6.7 17.5A7 7 0 0 0 19 13c0-3.87-3.13-7-7-7zm0 12v3l4-4-4-4v3a5 5 0 0 1-5-5c0-.85.2-1.65.55-2.36L6.1 7.2A7 7 0 0 0 5 13c0 3.87 3.13 7 7 7z"
+        />
+      </svg>
+      {texto}
+    </span>
+  );
+}
+
 function TelaLoad({ temIa }: { temIa: boolean }) {
   return (
     <main className="fase centro load">
@@ -326,7 +340,7 @@ function TelaCards({
               <span className="lado">pergunta</span>
             </span>
             <p className="corpo">{card.pergunta}</p>
-            <em>toque para virar</em>
+            <DicaVirar texto="Toque para ver a resposta" />
           </span>
           <span className="face verso" aria-hidden={!virado}>
             <span className="topo">
@@ -335,10 +349,14 @@ function TelaCards({
             </span>
             <p className="corpo">{resposta}</p>
             {mostrarTrecho && <small>{trecho}</small>}
-            {!mostrarTrecho && <em>toque para voltar</em>}
+            <DicaVirar texto="Toque para ver a pergunta" />
           </span>
         </button>
       </div>
+
+      <button type="button" className="btn virar-cta" onClick={onVirar}>
+        {virado ? "Ver pergunta" : "Ver resposta"}
+      </button>
 
       <div className="controles">
         <button type="button" className="btn secundario" onClick={onAnterior} disabled={posicao === 1}>
